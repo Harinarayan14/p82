@@ -5,25 +5,25 @@ import MyHeader from '../components/MyHeader.js'
 import firebase from 'firebase';
 import db from '../config.js'
 
-export default class MyDonationScreen extends Component {
+export default class MyExchangeScreen extends Component {
   static navigationOptions = { header: null };
 
    constructor(){
      super()
      this.state = {
        userId : firebase.auth().currentUser.email,
-       allDonations : []
+       allExchanges : []
      }
-     this.requestRef= null
+     this.exchangeRef= null
    }
 
 
-   getAllDonations =()=>{
-     this.requestRef = db.collection("all_donations").where("donor_id" ,'==', this.state.userId)
+   getAllExchanges =()=>{
+     this.exchangeRef = db.collection("all_exchanges").where("exchanger_id" ,'==', this.state.userId)
      .onSnapshot((snapshot)=>{
-       var allDonations = snapshot.docs.map(document => document.data());
+       var allExchanges = snapshot.docs.map(document => document.data());
        this.setState({
-         allDonations : allDonations,
+         allExchanges : allExchanges,
        });
      })
    }
@@ -34,7 +34,7 @@ export default class MyDonationScreen extends Component {
      <ListItem
        key={i}
        title={item.book_name}
-       subtitle={"Requested By : " + item.requested_by +"\nStatus : " + item.request_status}
+       subtitle={"Exchangeed By : " + item.exchangeed_by +"\nStatus : " + item.exchange_status}
        leftElement={<Icon name="book" type="font-awesome" color ='#696969'/>}
        titleStyle={{ color: 'black', fontWeight: 'bold' }}
        rightElement={
@@ -48,29 +48,29 @@ export default class MyDonationScreen extends Component {
 
 
    componentDidMount(){
-     this.getAllDonations()
+     this.getAllExchanges()
    }
 
    componentWillUnmount(){
-     this.requestRef();
+     this.exchangeRef();
    }
 
    render(){
      return(
        <View style={{flex:1}}>
-         <MyHeader navigation={this.props.navigation} title="My Donations"/>
+         <MyHeader navigation={this.props.navigation} title="My Exchanges"/>
          <View style={{flex:1}}>
            {
-             this.state.allDonations.length === 0
+             this.state.allExchanges.length === 0
              ?(
                <View style={styles.subtitle}>
-                 <Text style={{ fontSize: 20}}>List of all book Donations</Text>
+                 <Text style={{ fontSize: 20}}>List of all book Exchanges</Text>
                </View>
              )
              :(
                <FlatList
                  keyExtractor={this.keyExtractor}
-                 data={this.state.allDonations}
+                 data={this.state.allExchanges}
                  renderItem={this.renderItem}
                />
              )
