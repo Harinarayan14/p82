@@ -5,32 +5,32 @@ import firebase from 'firebase';
 import db from '../config'
 import MyHeader from '../components/MyHeader';
 
-export default class BookDonateScreen extends Component{
+export default class HomeScreen extends Component{
   constructor(){
     super()
     this.state = {
       userId  : firebase.auth().currentUser.email,
-      requestedBooksList : []
+      exchangeBooksList : []
     }
-  this.requestRef= null
+  this.exchangeRef= null
   }
 
-  getRequestedBooksList =()=>{
-    this.requestRef = db.collection("requested_books")
+  getExchangeBooksList =()=>{
+    this.exchangeRef = db.collection("exchange_books")
     .onSnapshot((snapshot)=>{
-      var requestedBooksList = snapshot.docs.map((doc) => doc.data())
+      var exchangeBooksList = snapshot.docs.map((doc) => doc.data())
       this.setState({
-        requestedBooksList : requestedBooksList
+        exchangeBooksList : exchangeBooksList
       });
     })
   }
 
   componentDidMount(){
-    this.getRequestedBooksList()
+    this.getExchangeBooksList()
   }
 
   componentWillUnmount(){
-    this.requestRef();
+    this.exchangeRef();
   }
 
   keyExtractor = (item, index) => index.toString()
@@ -40,12 +40,12 @@ export default class BookDonateScreen extends Component{
       <ListItem
         key={i}
         title={item.book_name}
-        subtitle={item.reason_to_request}
+        subtitle={item.description}
         titleStyle={{ color: 'black', fontWeight: 'bold' }}
         rightElement={
             <TouchableOpacity style={styles.button}
               onPress ={()=>{
-                this.props.navigation.navigate("RecieverDetails",{"details": item})
+                this.props.navigation.navigate("ExchangerDetails",{"details": item})
               }}
               >
               <Text style={{color:'#ffff'}}>View</Text>
@@ -62,16 +62,16 @@ export default class BookDonateScreen extends Component{
         <MyHeader title="Donate Books" navigation ={this.props.navigation}/>
         <View style={{flex:1}}>
           {
-            this.state.requestedBooksList.length === 0
+            this.state.exchangeBooksList.length === 0
             ?(
               <View style={styles.subContainer}>
-                <Text style={{ fontSize: 20}}>List Of All Requested Books</Text>
+                <Text style={{ fontSize: 20}}>List Of All Exchange Books</Text>
               </View>
             )
             :(
               <FlatList
                 keyExtractor={this.keyExtractor}
-                data={this.state.requestedBooksList}
+                data={this.state.exchangeBooksList}
                 renderItem={this.renderItem}
               />
             )
